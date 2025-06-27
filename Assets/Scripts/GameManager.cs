@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -8,27 +9,39 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Balloon balloonPrefab;
     [SerializeField] private Transform[] spawnPoints;
     [SerializeField] private float timeInterval = 2f;
+    [SerializeField] private float difficultyMultiplier = 0.9f;
+    private float multipliedTime;
     
     private float timeCounter;
 
     private void Start()
     {
         timeCounter = timeInterval;
+        multipliedTime = timeInterval;
+        
+        StartCoroutine(BalloonSpawning());
     }
 
-    private void Update()
+    private IEnumerator BalloonSpawning()
     {
-        timeCounter -= Time.deltaTime;
-
-        if (timeCounter > 0) return;
+        multipliedTime *= difficultyMultiplier;
+        float timeValue = Mathf.Max(multipliedTime, 0.6f);
+        
+        yield return new WaitForSeconds(timeValue);
         
         BalloonSpawnPoint();
-        timeCounter = timeInterval;
+        
+        StartCoroutine(BalloonSpawning());
     }
 
-    // private int RandomNumber(int length)
+    // private void Update()
     // {
-    //     return Random.Range(0, length);
+    //     timeCounter -= Time.deltaTime;
+    //
+    //     if (timeCounter > 0) return;
+    //     
+    //     BalloonSpawnPoint();
+    //     timeCounter = timeInterval;
     // }
 
     // private Balloon RandomBalloon()
