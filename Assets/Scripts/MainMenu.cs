@@ -4,14 +4,18 @@ using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
-    [SerializeField] private Button playButton;
-    [SerializeField] private Button quitButton;
     [SerializeField] private GameObject panel;
+    [SerializeField] private GameObject optionsPanel;
 
     public void Play()
     {
         panel.SetActive(false);
         GameManager.Instance.PlayGame();
+    }
+
+    public void Options()
+    {
+        optionsPanel.SetActive(true);
     }
 
     public void Quit()

@@ -24,8 +24,20 @@ public class Balloon : MonoBehaviour
         StartCoroutine(BalloonFade());
     }
 
+    private void Update()
+    {
+        Vector3 viewPos = Camera.main.WorldToViewportPoint(transform.position);
+        if (viewPos.y > 1f)
+        {
+            GameManager.Instance.DecreaseScore();
+            DestroyBalloon();
+        }
+    }
+
     private void OnMouseDown()
     {
+        if (Time.timeScale == 0) return;
+        
         clicksToPop--;
         Debug.Log($"Pressed");
 
@@ -33,7 +45,7 @@ public class Balloon : MonoBehaviour
         {
             AudioManager.Instance.PlayPopSound();
             GameManager.Instance.IncreaseScore();
-            Destroy(gameObject);
+            DestroyBalloon();
             return;
         }
         
@@ -68,6 +80,7 @@ public class Balloon : MonoBehaviour
             yield return new WaitForSeconds(0.25f);
         }
 
+        GameManager.Instance.DecreaseScore();
         DestroyBalloon();
     }
 
@@ -82,7 +95,7 @@ public class Balloon : MonoBehaviour
         rigidbody.linearDamping = Random.Range(0, 9.81f);
     }
     
-    private void DestroyBalloon()
+    public void DestroyBalloon()
     {
         Destroy(gameObject);
     }

@@ -12,11 +12,17 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Balloon balloonPrefab;
     [SerializeField] private Transform[] spawnPoints;
     [SerializeField] private TMP_Text scoreText;
+    [SerializeField] private TMP_Text gameOverText;
+    [SerializeField] private GameObject mainMenu;
+    [SerializeField] private GameObject gamePauseMenu;
     [SerializeField] private float timeInterval = 2f;
     [SerializeField] private float difficultyMultiplier = 0.9f;
 
-    private int score;
+    private IEnumerator spawnCoroutine;
     private float multipliedTime;
+    private int score;
+    private int lives = 5;
+    private bool isPaused;
     //private float timeCounter;
 
     private void Awake()
@@ -24,12 +30,42 @@ public class GameManager : MonoBehaviour
         if (!Instance) Instance = this;
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape) && !mainMenu.activeInHierarchy)
+        {
+            if (isPaused)
+            {
+                Time.timeScale = 1;
+                gamePauseMenu.SetActive(false);
+            }
+            else
+            {
+                gamePauseMenu.SetActive(true);
+                Time.timeScale = 0;
+            }
+            
+            isPaused = !isPaused;
+        }
+    }
+
     public void PlayGame()
     {
         multipliedTime = timeInterval;
-        
+        lives = 5;
+        score = 0;
         scoreText.text = $"Score: 0";
-        StartCoroutine(BalloonSpawning());
+        spawnCoroutine = BalloonSpawning();
+        StartCoroutine(spawnCoroutine);
+    }
+
+    private void KillAllBalloons()
+    {
+        Balloon[] ballons = FindObjectsByType<Balloon>(FindObjectsSortMode.None);
+        foreach (Balloon ballon in ballons)
+        {
+            ballon.DestroyBalloon();
+        }
     }
 
     private IEnumerator BalloonSpawning()
@@ -41,7 +77,7 @@ public class GameManager : MonoBehaviour
         
         BalloonSpawnPoint();
         
-        StartCoroutine(BalloonSpawning());
+        yield return BalloonSpawning();
     }
 
     // private void Update()
@@ -76,5 +112,29 @@ public class GameManager : MonoBehaviour
     {
         score++;
         scoreText.text = $"Score: {score}";
+    }
+
+    public void DecreaseScore()
+    {
+        score--;
+        lives--;
+        scoreText.text = $"Score: {score}";
+
+        if (lives <= 0)
+        {
+            StopCoroutine(spawnCoroutine);
+            StartCoroutine(LoseScreen());
+        }
+    }
+
+    public IEnumerator LoseScreen()
+    {
+        KillAllBalloons();
+        mainMenu.SetActive(true);
+        gameOverText.gameObject.SetActive(true);
+        
+        yield return new WaitForSeconds(3f);
+        
+        gameOverText.gameObject.SetActive(false);
     }
 }

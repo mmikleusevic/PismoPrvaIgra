@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class AudioManager : MonoBehaviour
 {
@@ -23,5 +24,10 @@ public class AudioManager : MonoBehaviour
     public void PlayPopSound()
     {
         audioSource.PlayOneShot(popSound);
+    }
+
+    public void SetVolume(float value)
+    {
+        audioSource.volume = value;
     }
 }
