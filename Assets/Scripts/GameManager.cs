@@ -1,24 +1,34 @@
 using System;
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager Instance { get; private set; }
+    
     //[SerializeField] private Balloon[] baloonPrefab;
     [SerializeField] private Balloon balloonPrefab;
     [SerializeField] private Transform[] spawnPoints;
+    [SerializeField] private TMP_Text scoreText;
     [SerializeField] private float timeInterval = 2f;
     [SerializeField] private float difficultyMultiplier = 0.9f;
-    private float multipliedTime;
-    
-    private float timeCounter;
 
-    private void Start()
+    private int score;
+    private float multipliedTime;
+    //private float timeCounter;
+
+    private void Awake()
     {
-        timeCounter = timeInterval;
+        if (!Instance) Instance = this;
+    }
+
+    public void PlayGame()
+    {
         multipliedTime = timeInterval;
         
+        scoreText.text = $"Score: 0";
         StartCoroutine(BalloonSpawning());
     }
 
@@ -60,5 +70,11 @@ public class GameManager : MonoBehaviour
     {
         Balloon balloonClone = Instantiate(balloonPrefab, RandomSpawnPoint().position, Quaternion.identity);
         balloonClone.ChangeMaterial();
+    }
+
+    public void IncreaseScore()
+    {
+        score++;
+        scoreText.text = $"Score: {score}";
     }
 }

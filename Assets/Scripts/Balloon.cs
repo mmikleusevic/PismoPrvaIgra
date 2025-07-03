@@ -32,6 +32,7 @@ public class Balloon : MonoBehaviour
         if (clicksToPop <= 0)
         {
             AudioManager.Instance.PlayPopSound();
+            GameManager.Instance.IncreaseScore();
             Destroy(gameObject);
             return;
         }
@@ -49,7 +50,7 @@ public class Balloon : MonoBehaviour
         {
             transform.localScale = new Vector3(scale, scale, scale);
 
-            yield return new WaitForSeconds(0.02f);
+            yield return null;
         }
     }
 
